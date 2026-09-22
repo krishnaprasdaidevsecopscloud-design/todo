@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.TodoVoice" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+</resources>
