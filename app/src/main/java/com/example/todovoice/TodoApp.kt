@@ -7,5 +7,6 @@ class TodoApp : Application() {
         super.onCreate()
         NotificationHelper.createChannels(this)
         PendingReminderWorker.schedule(this) // every 3 hours, survives process death
+        if (AppPrefs.isCalendarConnected(this)) CalendarSyncWorker.schedulePeriodic(this) // hourly
     }
 }

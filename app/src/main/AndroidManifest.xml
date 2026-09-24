@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- task alarm: ringing service + alarm screen over the lock screen -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".TodoApp"
@@ -27,9 +32,45 @@
             android:name=".AddTaskActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".AlarmActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:taskAffinity="" />
+
+        <activity
+            android:name=".OnlineToneActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CalendarSettingsActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".AlarmRingService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
         <receiver
             android:name=".VoiceAlarmReceiver"
             android:exported="false" />
+
+        <receiver
+            android:name=".DueAlarmReceiver"
+            android:exported="false" />
+
+        <!-- exported so the system can deliver these protected broadcasts -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>

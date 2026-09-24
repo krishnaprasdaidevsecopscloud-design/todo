@@ -47,6 +47,10 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
-    // WorkManager (periodic 3-hour pending digest)
+    // WorkManager (periodic 3-hour pending digest, hourly calendar sync)
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Google sign-in + Calendar consent (Identity AuthorizationClient)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 }
