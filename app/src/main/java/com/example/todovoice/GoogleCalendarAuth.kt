@@ -47,6 +47,18 @@ object GoogleCalendarAuth {
         }
     }
 
+    /** Shown when the consent screen closed without a specific error (backed out, or Google blocked the account). */
+    const val NOT_GRANTED_HELP =
+        "The consent screen closed without granting access. Common causes:\n\n" +
+            "• Your Gmail address isn't a Test user on the OAuth consent screen in Google Cloud Console.\n" +
+            "• Google Calendar API isn't enabled, or the calendar.readonly scope isn't added.\n" +
+            "• The SHA-1 of this installed APK isn't registered (APKs built by GitHub Actions have a different SHA-1).\n" +
+            "• Back or Cancel was pressed on the Google screen.\n\n" +
+            "Console changes can take 5–10 minutes to apply. See README for setup."
+
+    fun isCancel(e: Exception): Boolean =
+        e is ApiException && e.statusCode == CommonStatusCodes.CANCELED
+
     fun describeError(e: Exception): String =
         if (e is ApiException) {
             when (e.statusCode) {
@@ -55,7 +67,8 @@ object GoogleCalendarAuth {
                         "Check the package name and SHA-1 in Google Cloud Console (see README)."
                 CommonStatusCodes.NETWORK_ERROR -> "No internet connection."
                 CommonStatusCodes.CANCELED -> "Sign-in was cancelled."
-                else -> "Google error ${e.statusCode}: ${e.message}"
+                else -> "Google error ${e.statusCode} " +
+                    "(${CommonStatusCodes.getStatusCodeString(e.statusCode)}): ${e.message}"
             }
         } else {
             e.message ?: e.toString()

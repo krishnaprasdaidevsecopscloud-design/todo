@@ -34,7 +34,14 @@ class CalendarSettingsActivity : AppCompatActivity() {
     private val consentLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { res ->
             if (res.resultCode != RESULT_OK) {
-                Toast.makeText(this, "Google Calendar access was not granted", Toast.LENGTH_SHORT).show()
+                // the result intent usually carries Google's real reason; surface it instead of a generic toast
+                val reason = try {
+                    GoogleCalendarAuth.resultFromIntent(this, res.data)
+                    null
+                } catch (e: Exception) {
+                    e
+                }
+                if (reason != null && !GoogleCalendarAuth.isCancel(reason)) showError(reason) else showNotGranted()
                 return@registerForActivityResult
             }
             try {
@@ -174,6 +181,14 @@ class CalendarSettingsActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Couldn't connect Google Calendar")
             .setMessage(GoogleCalendarAuth.describeError(e))
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun showNotGranted() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Google Calendar access was not granted")
+            .setMessage(GoogleCalendarAuth.NOT_GRANTED_HELP)
             .setPositiveButton("OK", null)
             .show()
     }
