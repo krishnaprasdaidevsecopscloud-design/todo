@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -46,6 +50,54 @@
             android:text="Pick date" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textSelectedTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnClearTime"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnPickTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pick time" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textSelectedTone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnPickTone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm tone" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
@@ -54,3 +106,4 @@
         android:text="Save Task" />
 
 </LinearLayout>
+</ScrollView>

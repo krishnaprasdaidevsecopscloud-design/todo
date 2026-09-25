@@ -1,9 +1,12 @@
 package com.example.todovoice
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,15 +90,41 @@ class TaskListFragment : Fragment(R.layout.fragment_task_list) {
             { _, year, month, day ->
                 val picked = Calendar.getInstance()
                 picked.set(year, month, day, 0, 0, 0)
-                viewLifecycleOwner.lifecycleScope.launch {
-                    repo.markPending(task, picked.timeInMillis)
-                    VoiceAlarmReceiver.cancel(requireContext(), task.id)
-                    Toast.makeText(requireContext(), "Moved to Pending, due ${day}/${month + 1}/${year}", Toast.LENGTH_SHORT).show()
+                val newDate = DateUtils.startOfDay(picked.timeInMillis)
+                askAlarmTime(task, newDate) { remindAt ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        repo.markPending(task, newDate, remindAt)
+                        VoiceAlarmReceiver.cancel(requireContext(), task.id)
+                        val at = remindAt?.let { " at ${DateUtils.formatTime(requireContext(), it)}" } ?: ""
+                        Toast.makeText(requireContext(), "Moved to Pending, due ${day}/${month + 1}/${year}$at", Toast.LENGTH_SHORT).show()
+                    }
                 }
             },
             cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
         ).apply {
             datePicker.minDate = System.currentTimeMillis() - 1000
+        }.show()
+    }
+
+    /** Optional alarm time on [day]; "No alarm" passes null, backing out cancels the move. */
+    private fun askAlarmTime(task: Task, day: Long, onChosen: (Long?) -> Unit) {
+        val initial = Calendar.getInstance().apply { task.remindAt?.let { timeInMillis = it } }
+        TimePickerDialog(
+            requireContext(),
+            { _, hour, minute ->
+                val at = DateUtils.atTime(day, hour, minute)
+                if (at <= System.currentTimeMillis()) {
+                    Toast.makeText(requireContext(), "That time has passed, so no alarm was set", Toast.LENGTH_SHORT).show()
+                    onChosen(null)
+                } else {
+                    onChosen(at)
+                }
+            },
+            initial.get(Calendar.HOUR_OF_DAY), initial.get(Calendar.MINUTE),
+            DateFormat.is24HourFormat(requireContext())
+        ).apply {
+            setTitle("Alarm time (optional)")
+            setButton(DialogInterface.BUTTON_NEGATIVE, "No alarm") { _, _ -> onChosen(null) }
         }.show()
     }
 

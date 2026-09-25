@@ -24,6 +24,7 @@ class TaskAdapter(
         val title: TextView = view.findViewById(R.id.textTitle)
         val note: TextView = view.findViewById(R.id.textNote)
         val date: TextView = view.findViewById(R.id.textDate)
+        val source: TextView = view.findViewById(R.id.textSource)
         val btnInProgress: Button = view.findViewById(R.id.btnInProgress)
         val btnPending: Button = view.findViewById(R.id.btnPending)
         val btnCompleted: Button = view.findViewById(R.id.btnCompleted)
@@ -42,8 +43,10 @@ class TaskAdapter(
         val label = if (task.status == TaskStatus.COMPLETED && task.completedAt != null)
             "Completed: ${df.format(Date(task.completedAt))}"
         else
-            "Due: ${df.format(Date(dateMillis))}"
+            "Due: ${df.format(Date(dateMillis))}" +
+                (task.remindAt?.let { " · ⏰ ${DateUtils.formatTime(holder.itemView.context, it)}" } ?: "")
         holder.date.text = label
+        holder.source.visibility = if (task.calendarEventId != null) View.VISIBLE else View.GONE
 
         holder.itemView.setOnClickListener {
             if (!task.appLink.isNullOrBlank()) onOpenLink(task)
